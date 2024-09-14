@@ -41,7 +41,6 @@ const SpeedDisplay = ({ goalSpeed }) => {
         setElapsedTime(prevTime => prevTime + 1);
       }, 1000);
 
-      // Cleanup timer on component unmount or when running stops
       return () => clearInterval(timerRef.current);
     } else {
       clearInterval(timerRef.current);
@@ -64,7 +63,7 @@ const SpeedDisplay = ({ goalSpeed }) => {
   const stopRun = () => {
     setRunning(false);
     setPaused(false);
-    setElapsedTime(0); // Optionally reset the timer
+    setElapsedTime(0); 
   };
 
   const formatTime = (seconds) => {
