@@ -11,11 +11,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  const [goalPace, setGoalPace] = useState(0);
+  const updateRunningMetrics = (state) => {
+    return
+  }
 
-  const updateGoalPace = (goal) => {
-    setGoalPace(goal);
-  };
 
   return (
     <NavigationContainer>
@@ -32,7 +31,6 @@ const App = () => {
         <Tab.Screen
           name="Profile"
           component={Profile}
-          initialParams={{ setGoalPace: updateGoalPace }}
         />
       </Tab.Navigator>
     </NavigationContainer>

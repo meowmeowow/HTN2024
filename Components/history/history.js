@@ -13,7 +13,7 @@ const History = () => {
     ];
 
 
-    const HistoryComponent = ({ pace, miles, time, date, goalPace }) => {
+    const HistoryComponent = ({ pace, kilometers, time, date, goalPace }) => {
         return (
             <View style={styles.item}>
                 <View style={styles.rightRect}>
@@ -22,7 +22,7 @@ const History = () => {
                         <Text style = {{alignSelf: 'flex-end' }}> pace</Text>
                     </View>
                 
-                    <Text style={styles.text}>Miles: {miles}</Text>
+                    <Text style={styles.text}>Kilometers: {kilometers}</Text>
                     <Text style={styles.text}>Time: {time} minutes</Text>
                     <Text style={styles.text}>Date: {date}</Text>
                     <Text style={styles.text}>Goal Pace: {goalPace}</Text>
