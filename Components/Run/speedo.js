@@ -82,27 +82,24 @@ const SpeedDisplay = ({ goalSpeed }) => {
     
     <View style={styles.container}>
       <SetGoal/>
+      <View style={{position:'absolute', width: 300}}>
+      <View style={{ wordWrap: 'break-word'}}>
+        <Text style={{textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
+      </View>
 
-      <View style={{position:'absolute'}}>
-        {speed !== null ? (
-          <Text>User's Speed: {Math.round(speed*10)/10} m/s</Text>
-        ) : (
-          <Text>Loading...</Text>
-        )}
-
-        <Text>Time: {formatTime(elapsedTime)}</Text>
+        <Text style = {{textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
 
         {!running ? (
-          <Button title="Start Run" onPress={startRun} />
+          <Button style={styles.button} title="Start Run" onPress={startRun} />
         ) : paused ? (
           <>
-            <Button title="Resume Run" onPress={resumeRun} />
-            <Button title="Stop Run" onPress={stopRun} />
+            <Button style={styles.button} title="Resume Run" onPress={resumeRun} />
+            <Button style = {styles.button}title="Stop Run" onPress={stopRun} />
           </>
         ) : (
           <>
-            <Button title="Pause Run" onPress={pauseRun} />
-            <Button title="Stop Run" onPress={stopRun} />
+            <Button style={styles.button} title="Pause Run" onPress={pauseRun} />
+            <Button style={styles.button}title="Stop Run" onPress={stopRun} />
           </>
         )}
             
@@ -113,13 +110,20 @@ const SpeedDisplay = ({ goalSpeed }) => {
 
 // Styles
 const styles = StyleSheet.create({
+  middleContainer: {
+  },
   container: {
     flex: 1,
-    width: `100%`,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  button: {
+    borderRadius: '5',
+    width: 20,
+    padding: 10, // Adjust the padding as needed
+    height: 40,
+  }
 });
 
 export default SpeedDisplay;
