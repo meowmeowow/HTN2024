@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Speedo from './Components/speedo';
-import History from './Components/history';
+import Speedo from './Components/Run/speedo';
+import History from './Components/history/history';
 import Profile from './Components/profile';
 
 import React, { useState } from 'react';
