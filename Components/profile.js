@@ -3,7 +3,7 @@ import { View, Text, FlatList, Button, StyleSheet, TextInput } from 'react-nativ
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
-
+``
 const DREADFUL_JAMS = {
     PATH: 0,
     NAME: 1,
@@ -32,7 +32,12 @@ const fav_jams_list = [
 ];
 
 // Profile Component with Navigation Stack
-const ProfileStack = () => {
+const Profile = ({route}) => {
+  const { setGoalPace } = route.params;
+
+  const updateGoalPace = (newGoal) => {
+    setGoalPace(newGoal);
+  };
   return (
     <Stack.Navigator>
       <Stack.Screen name="Settings" component={Settings} />
@@ -45,41 +50,10 @@ const ProfileStack = () => {
 
 // Settings Component
 const Settings = ({ navigation }) => {
-  const [paceGoal, setPaceGoal] = useState(0.00);
-  const [isEditing, setIsEditing] = useState(false);
-  const [newPaceGoal, setNewPaceGoal] = useState(paceGoal.toString());
-
-  const handleEditGoal = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveGoal = () => {
-    const goal = parseFloat(newPaceGoal);
-    if (!isNaN(goal)) {
-      setPaceGoal(goal);
-      setIsEditing(false);
-    }
-  };
+  
 
   return (
     <View style={styles.container}>
-      <Text>Set Your Pace Goal</Text>
-      {isEditing ? (
-        <>
-          <TextInput
-            style={styles.input}
-            value={newPaceGoal}
-            onChangeText={setNewPaceGoal}
-            keyboardType='numeric'
-          />
-          <Button title="Save Goal" onPress={handleSaveGoal} />
-        </>
-      ) : (
-        <>
-          <Text>Current Goal: {paceGoal.toFixed(2)}</Text>
-          <Button title="Edit Goal" onPress={handleEditGoal} />
-        </>
-      )}
       <Button title="Motivators" onPress={() => navigation.navigate('Motivators')} />
       <Button title="Favorite Jams" onPress={() => navigation.navigate('Favorite_Jams')} />
       <Button title="Dreadful Jams" onPress={() => navigation.navigate('Dreadful_Jams')} />
@@ -148,7 +122,7 @@ const Dreadful_Jams = () => {
 };
 
 // Export the ProfileStack component
-export default ProfileStack;
+export default Profile;
 
 // Styles
 const styles = StyleSheet.create({
