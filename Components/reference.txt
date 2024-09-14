@@ -1,0 +1,132 @@
+/* History */
+
+position: relative;
+width: 375px;
+height: 671px;
+
+background: #FFFFFF;
+
+
+/* Rectangle 4 */
+
+position: absolute;
+width: 346px;
+height: 88px;
+
+background: #C3C3C3;
+opacity: 0.2;
+border-radius: 10px;
+
+
+/* 4:15 */
+
+position: absolute;
+width: 161px;
+height: 39px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 40px;
+line-height: 48px;
+
+color: #000000;
+
+
+
+/* Rectangle 7 */
+
+position: absolute;
+width: 9px;
+height: 88px;
+
+background: #65A06B;
+border-radius: 10px 0px 0px 10px;
+
+
+/* Group 1 */
+
+position: absolute;
+width: 336px;
+height: 75px;
+
+
+
+/* 4:15 */
+
+position: absolute;
+width: 302px;
+height: 21px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 40px;
+line-height: 48px;
+
+color: #000000;
+
+
+
+/* 4:05 */
+
+position: absolute;
+width: 65px;
+height: 39px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 24px;
+line-height: 29px;
+
+color: #8B8B8B;
+
+
+
+/* 12 km | 51 min | August 31 */
+
+position: absolute;
+width: 217px;
+height: 23px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+
+color: rgba(0, 0, 0, 0.6);
+
+
+
+/* Pace (min/km) */
+
+position: absolute;
+width: 68px;
+height: 12px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 8px;
+line-height: 10px;
+
+color: #9A9A9A;
+
+
+
+/* Goal Pace (min/km) */
+
+position: absolute;
+width: 68px;
+height: 12px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 8px;
+line-height: 10px;
+
+color: #9A9A9A;
+

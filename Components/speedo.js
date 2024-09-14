@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
-
+import SetGoal from './setGoal';
 const SpeedDisplay = ({ goalSpeed }) => {
   const [speed, setSpeed] = useState(null);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef(null); // Ref to store interval timer
-
+  
+  function roundSpeedToNearestTenth(speed) {
+    let roundedSpeed = Math.round(speed / 10) * 10;
+    
+    return roundedSpeed;
+}
   useEffect(() => {
     const getLocation = async () => {
       const { status } = await requestPermissionsAsync();
@@ -74,28 +79,34 @@ const SpeedDisplay = ({ goalSpeed }) => {
   };
 
   return (
+    
     <View style={styles.container}>
-      {speed !== null ? (
-        <Text>User's Speed: {speed} m/s</Text>
-      ) : (
-        <Text>Loading...</Text>
-      )}
+      <SetGoal/>
 
-      <Text>Time: {formatTime(elapsedTime)}</Text>
+      <View style={{position:'absolute'}}>
+        {speed !== null ? (
+          <Text>User's Speed: {Math.round(speed*10)/10} m/s</Text>
+        ) : (
+          <Text>Loading...</Text>
+        )}
 
-      {!running ? (
-        <Button title="Start Run" onPress={startRun} />
-      ) : paused ? (
-        <>
-          <Button title="Resume Run" onPress={resumeRun} />
-          <Button title="Stop Run" onPress={stopRun} />
-        </>
-      ) : (
-        <>
-          <Button title="Pause Run" onPress={pauseRun} />
-          <Button title="Stop Run" onPress={stopRun} />
-        </>
-      )}
+        <Text>Time: {formatTime(elapsedTime)}</Text>
+
+        {!running ? (
+          <Button title="Start Run" onPress={startRun} />
+        ) : paused ? (
+          <>
+            <Button title="Resume Run" onPress={resumeRun} />
+            <Button title="Stop Run" onPress={stopRun} />
+          </>
+        ) : (
+          <>
+            <Button title="Pause Run" onPress={pauseRun} />
+            <Button title="Stop Run" onPress={stopRun} />
+          </>
+        )}
+            
+        </View>
     </View>
   );
 };
@@ -104,6 +115,7 @@ const SpeedDisplay = ({ goalSpeed }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: `100%`,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',

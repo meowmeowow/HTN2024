@@ -40,11 +40,6 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  Text: {
-    color: 'black',
-    fontSize: 30,
-    fontFamily: 'Poppins-Black'
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
