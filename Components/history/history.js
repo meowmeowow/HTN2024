@@ -21,16 +21,23 @@ const History = ({ metrics }) => {
     const allRuns = [...runs, additionalRun];
 
     const HistoryComponent = ({ pace, time, date, goalPace }) => {
+        const backgroundColor = pace >= goalPace ? '#FFDDDD' : '#65A06B';
         return (
             <View style={styles.item}>
                 <View style={styles.rightRect}>
                     <View style={styles.flexPace}>
-                        <Text style={styles.Pace}>{pace}</Text>
-                        <Text style={{ alignSelf: 'flex-end' }}> pace</Text>
+                        <View style={styles.paceContainer}>
+                            <Text style={styles.Pace}>{pace}</Text>
+                            <Text style={styles.units}> Pace {'\n'}(min/km)</Text>
+                        </View>
+                        <View style={styles.goalContainer}>
+                            <Text style={styles.goal}>Goal Pace: {goalPace}</Text>
+                        </View>
                     </View>
-                    <Text style={styles.text}>Time: {time} minutes</Text>
-                    <Text style={styles.text}>Date: {date}</Text>
-                    <Text style={styles.text}>Goal Pace: {goalPace}</Text>
+                    <View style={styles.stuff}>
+                        <Text style={styles.text}>{time} min  | </Text>
+                        <Text style={styles.text}>{date}</Text>
+                    </View>
                 </View>
             </View>
         );
@@ -50,21 +57,46 @@ const History = ({ metrics }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
-    flexPace: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        alignItems: 'flex-end'
+    flexPace:
+    { flexDirection: 'row', 
+      justifyContent: 'space-between', 
+      fontFamily: 'Inter',
     },
+
+    paceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center', // Align items vertically in pace container
+    },
+
+    paceContainer: {
+        flexDirection: 'row',
+        alignItems: 'baseline', // Align items vertically within pace container
+
+    },
+
+    stuff: {
+        flexDirection: 'row',
+    },
+
+    units: {
+        fontSize: 12,
+        marginLeft: 5,
+        opacity: 0.4,
+    },
+
+    goal: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+
     rightRect: {
         marginLeft: 10,
         padding: 10,
         backgroundColor: '#f0f0f0',
     },
     Pace: {
-        fontSize: 30,
+        fontSize: 50,
         fontWeight: 'bold',
     },
     container: {
@@ -82,7 +114,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     text: {
-        fontFamily: 'Poppins-Black'
+        fontFamily: 'Poppins-Black',
+        padding: 2,
     },
 });
 
