@@ -16,23 +16,27 @@ const History = () => {
     const HistoryComponent = ({ pace, miles, time, date, goalPace }) => {
         return (
             <View style={styles.item}>
-                <Text style={styles.text}>Pace: {pace}</Text>
-                <Text style={styles.text}>Miles: {miles}</Text>
-                <Text style={styles.text}>Time: {time} minutes</Text>
-                <Text style={styles.text}>Date: {date}</Text>
-                <Text style={styles.text}>Goal Pace: {goalPace}</Text>
+                <View style={styles.rightRect}>
+                    <View style={styles.flexPace}>
+                        <Text style={styles.Pace}>{pace}</Text>
+                        <Text> pace</Text>
+                    </View>
+                
+                    <Text style={styles.text}>Miles: {miles}</Text>
+                    <Text style={styles.text}>Time: {time} minutes</Text>
+                    <Text style={styles.text}>Date: {date}</Text>
+                    <Text style={styles.text}>Goal Pace: {goalPace}</Text>
+                </View>
             </View>
         );
     };
 
-    useEffect(() => {
-        // Your side effect code here
-    }, []); // Empty dependency array since there are no dependencies
 
     return (
         <View style={styles.container}>
             {runs.map((run, index) => (
                 <HistoryComponent
+                    
                     key={index}
                     pace={run[0]}
                     miles={run[1]}
@@ -49,21 +53,39 @@ const History = () => {
 
 //edit
 const styles = StyleSheet.create({
+    flexPace:
+    { flexDirection: 'row', 
+      justifyContent: 'flex-start', 
+      alignItems: 'center',
+      alignItems: 'flex-end',
+    
+    },
+
+    rightRect: {
+        marginLeft: 10,
+        padding: 10,
+        backgroundColor: '#f0f0f0',
+    },
+    Pace: {
+        fontSize: 40,
+        fontWeight: 'bold',
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
     },
     item: {
-        padding: 15,
+        padding: 0,
         marginVertical: 8,
         marginHorizontal: 16,
         borderWidth: 1,
         borderColor: '#ddd',
+        backgroundColor: '#65A06B',
         borderRadius: 5,
     },
     text: {
-        fontSize: 16,
+        fontFamily: 'Poppins-Black'
     },
 });
 
