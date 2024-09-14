@@ -1,7 +1,7 @@
 // History.js
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-//a
+
 // Define the SAVED_RUNS object and runs array
 const SAVED_RUNS = {
     PACE: 0,
