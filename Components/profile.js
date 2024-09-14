@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, TextInput } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+let paceGoal = 10;
 const Stack = createNativeStackNavigator();
 ``
 const DREADFUL_JAMS = {
