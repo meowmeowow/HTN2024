@@ -11,7 +11,6 @@ const SAVED_RUNS = {
     GOAL_PACE: 4,
 };
 
-//for now with no backend connected-> new run is added to this 2d arraylist 
 const runs = [
     [82, 423, 912308, 12323, 123],
     [82, 423, 912308, 12323, 123],

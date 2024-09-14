@@ -11,10 +11,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 
 
-import { Cache } from "react-native-cache";
-
-
-
 const Tab = createBottomTabNavigator();
 
 
