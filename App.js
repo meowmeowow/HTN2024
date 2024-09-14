@@ -1,30 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import Speedo from './Components/speedo'; // Ensure Speedo is correctly exported
-import History from './Components/history'; 
-import Profile from './Components/profile'; 
+import { StyleSheet, Text, View } from 'react-native';
+import Speedo from './Components/speedo';
+import History from './Components/history';
+import Profile from './Components/profile';
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-
-
-
-import { Cache } from "react-native-cache";
-
-
-
 const Tab = createBottomTabNavigator();
 
-
-
-
 const App = () => {
-    return (
+  const [goalPace, setGoalPace] = useState(0);
+
+  const updateGoalPace = (goal) => {
+    setGoalPace(goal);
+  };
+
+  return (
     <NavigationContainer>
       <Tab.Navigator>
-      <Tab.Screen
+        <Tab.Screen
           name="History"
           component={History}
         />
@@ -33,17 +29,15 @@ const App = () => {
           component={Speedo}
           options={{ title: 'Run' }}
         />
-                <Tab.Screen
+        <Tab.Screen
           name="Profile"
           component={Profile}
+          initialParams={{ setGoalPace: updateGoalPace }}
         />
-
       </Tab.Navigator>
     </NavigationContainer>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   Text: {
@@ -59,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App; 
+export default App;
