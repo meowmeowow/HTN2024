@@ -3,6 +3,9 @@ import { View, Text, FlatList, Button, StyleSheet, TextInput } from 'react-nativ
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
+let paceGoal = 10;
+// module.exports = paceGoal;
+
 
 const DREADFUL_JAMS = {
     PATH: 0,
@@ -57,6 +60,7 @@ const Settings = ({ navigation }) => {
     const goal = parseFloat(newPaceGoal);
     if (!isNaN(goal)) {
       setPaceGoal(goal);
+      // module.exports = paceGoal;
       setIsEditing(false);
     }
   };
@@ -73,6 +77,7 @@ const Settings = ({ navigation }) => {
             keyboardType='numeric'
           />
           <Button title="Save Goal" onPress={handleSaveGoal} />
+          paceGoal.module 
         </>
       ) : (
         <>
