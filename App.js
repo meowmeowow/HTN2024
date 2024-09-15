@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Speedo from './Components/speedo';
-import History from './Components/history';
+import Speedo from './Components/Run/speedo';
+import History from './Components/history/history';
 import Profile from './Components/profile';
 
 import React, { useState } from 'react';
@@ -11,11 +11,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  const [goalPace, setGoalPace] = useState(0);
+  const updateRunningMetrics = (state) => {
+    return
+  }
 
-  const updateGoalPace = (goal) => {
-    setGoalPace(goal);
-  };
 
   return (
     <NavigationContainer>
@@ -32,7 +31,6 @@ const App = () => {
         <Tab.Screen
           name="Profile"
           component={Profile}
-          initialParams={{ setGoalPace: updateGoalPace }}
         />
       </Tab.Navigator>
     </NavigationContainer>
@@ -40,11 +38,6 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  Text: {
-    color: 'black',
-    fontSize: 30,
-    fontFamily: 'Poppins-Black'
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',

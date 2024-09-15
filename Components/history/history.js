@@ -13,16 +13,16 @@ const History = () => {
     ];
 
 
-    const HistoryComponent = ({ pace, miles, time, date, goalPace }) => {
+    const HistoryComponent = ({ pace, kilometers, time, date, goalPace }) => {
         return (
             <View style={styles.item}>
                 <View style={styles.rightRect}>
                     <View style={styles.flexPace}>
                         <Text style={styles.Pace}>{pace}</Text>
-                        <Text> pace</Text>
+                        <Text style = {{alignSelf: 'flex-end' }}> pace</Text>
                     </View>
                 
-                    <Text style={styles.text}>Miles: {miles}</Text>
+                    <Text style={styles.text}>Kilometers: {kilometers}</Text>
                     <Text style={styles.text}>Time: {time} minutes</Text>
                     <Text style={styles.text}>Date: {date}</Text>
                     <Text style={styles.text}>Goal Pace: {goalPace}</Text>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     { flexDirection: 'row', 
       justifyContent: 'flex-start', 
       alignItems: 'center',
-      alignItems: 'flex-end',
+      alignItems: 'flex-end'
     
     },
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
     },
     Pace: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
     },
     container: {
