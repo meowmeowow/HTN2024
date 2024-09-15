@@ -126,32 +126,35 @@ const ProfileScreen = ({ navigation }) => {
             <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
           </View>
         )}
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Add Positive Affirmation"
-            onPress={() => {
-              setSelectedAffirmationType('positive');
-              setModalVisible(true);
-            }}
-          />
-          <Button
-            title="Add Negative Affirmation"
-            onPress={() => {
-              setSelectedAffirmationType('negative');
-              setModalVisible(true);
-            }}
-          />
-        </View>
+<View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+  <Button
+    title="+ Positive motivation"
+    onPress={() => {
+      setSelectedAffirmationType('positive');
+      setModalVisible(true);
+    }}
+    style={{ padding: 10 }}
+  />
+  <Button
+    title="+ Negative motivation"
+    onPress={() => {
+      setSelectedAffirmationType('negative');
+      setModalVisible(true);
+    }}
+    style={{ padding: 10, marginLeft: 20 }}
+  />
+</View>
+
       </View>
 
       <View style={styles.listContainer}>
-        <Text style={styles.sectionTitle}>Positive Affirmations</Text>
+        <Text style={styles.sectionTitle}>Positive motivation</Text>
         <FlatList
           data={motivatorList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderAffirmationItem}
         />
-        <Text style={styles.sectionTitle}>Negative Affirmations</Text>
+        <Text style={styles.sectionTitle}>Negative motivation</Text>
         <FlatList
           data={demotivatorList}
           keyExtractor={(item, index) => index.toString()}
@@ -181,12 +184,12 @@ const ProfileScreen = ({ navigation }) => {
             ) : (
               <>
                 <TextInput
-                  placeholder="Enter new demotivation"
+                  placeholder="+ agressive motivation"
                   value={newDemotivation}
                   onChangeText={setNewDemotivation}
                   style={styles.input}
                 />
-                <Button title="Add Demotivation" onPress={addDemotivation} />
+                <Button title="+ agressive motivation" onPress={addDemotivation} />
               </>
             )}
             <Button title="Cancel" onPress={() => setModalVisible(false)} />
