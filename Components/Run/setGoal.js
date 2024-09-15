@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   input: {
+    textAlign: 'center',
+
     height: 40,
     width: '80%',
     borderColor: '#ddd',

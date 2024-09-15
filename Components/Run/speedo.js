@@ -1,10 +1,29 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, Button, Modal, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, Modal, TouchableOpacity, Image } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
-import { Bar as ProgressBar } from 'react-native-progress'; // Correct import
+import { Bar as ProgressBar } from 'react-native-progress';
 import axios from 'axios';
 import * as Speech from 'expo-speech';
 import SetGoal from './setGoal';
+import TypingAnimation from '../TypingAnimation';
+const moodHappy = require('./CoachMood/CoachSmirk.png');
+const moodMad = require('./CoachMood/AngryCoach.png');
+const moodNeutral = require('./CoachMood/ColdChicken.png');
+
+const potentialSpeech = {
+  happyCoach: [
+    "Hey! Keep it up!",
+    "You're doing great!!",
+  ],
+  neutralCoach: [
+    "I think we can do better than that.",
+    "Pick up the pace...",
+  ],
+  angryCoach: [
+    "You makin' fun of me??!?",
+    "This is why Jolliver said you were built like a rat.",
+  ],
+};
 
 const API_URL = 'http://quickdraw.willowmail.com/api/data';
 
@@ -25,6 +44,7 @@ const LOW_SPEED_THRESHOLD = 0.5; // speed below which message is fetched
 const HIGH_SPEED_THRESHOLD = 1.5; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
+  const [blab, setBlab] = useState("Another day, another you, let's get going!");
   const [speed, setSpeed] = useState(null);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -34,16 +54,17 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [levelColour, setLevelColour] = useState('gray');
   const [story, setStory] = useState('');
   const [error, setError] = useState('');
+  const [coachState, setCoachState] = useState(moodNeutral);
 
   const timerRef = useRef(null); // Ref to store interval timer
   const locationSubscriptionRef = useRef(null); // Ref for location subscription
   const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
-  const paceGoal = 5; // Assuming paceGoal is a constant here; you can modify it accordingly
+  const paceGoal = 2;
 
   const fetchText = async (messageType) => {
     try {
-      const response = await axios.post(API_URL, { 'message': messageType });
+      const response = await axios.post(API_URL, { message: messageType });
       const fetchedMessage = response.data.message;
       setStory(fetchedMessage);
       if (running) {
@@ -55,7 +76,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   };
 
   const logJog = () => {
-    updateRunningMetrics(avgspeed / (elapsedTime * 10), elapsedTime, paceGoal, date);
+    updateRunningMetrics(avgspeed / elapsedTime, elapsedTime, paceGoal, date);
   };
 
   const handleLogAndHide = () => {
@@ -111,7 +132,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
             timeInterval: 1000,
           },
           (location) => {
-            const userSpeed = location.coords.speed*1.5; // Adjust speed if needed
+            const userSpeed = location.coords.speed || 0; // Default to 0 if speed is null
             setSpeed(userSpeed);
             setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
 
@@ -133,6 +154,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         );
       }
     };
+
 
     if (running) {
       getLocation();
@@ -170,10 +192,15 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     let tempDisplay = Math.min(userSpeed/ paceGoal * 100, 100);
     let color;
     if (tempDisplay < 25) {
+      setCoachState(moodMad);
       color = '#cc0000'; // Red for low
     } else if (tempDisplay < 50) {
       color = '#e69138'; // Yellow for medium
+      setCoachState(moodNeutral);
+
     } else if (tempDisplay < 75) {
+      setCoachState(moodHappy);
+
       color = '#f1c232'; // Light Yellow
     } else {
       color = '#6aa84f'; // Green for high
@@ -185,7 +212,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Set Goal Speed (m/s):</Text>
-      <SetGoal />
+      <SetGoal/>
 
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
@@ -224,6 +251,8 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
               </TouchableOpacity>
             </>
           )}
+            <Image style={{margin:10, marginTop: 10, paddingBottom:20, width: 200, height:200}} source={coachState}/>
+            <TypingAnimation text={blab} />
         </View>
       </View>
 
@@ -258,11 +287,13 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    alignContent: 'center',
     fontSize: 16,
     marginBottom: 20,
   },
   statsContainer: {
-    alignItems: 'center',
+    position: 'absolute',
+    justifyContent: 'center',
   },
   statsText: {
     textAlign: 'center',
@@ -270,12 +301,14 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   progressBarContainer: {
-    width: '80%',
+    width: 40,
     height: 20,
+    marginLeft: 30,
     marginVertical: 10,
   },
   progressBar: {
     height: 10,
+    width: 170
   },
   buttonsContainer: {
     marginTop: 20,
