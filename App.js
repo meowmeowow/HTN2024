@@ -7,6 +7,7 @@ import Profile from './Components/profile';
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const Tab = createBottomTabNavigator();
 
@@ -14,8 +15,8 @@ const App = () => {
   const [metrics, setMetrics] = useState({
     speed: null,
     elapsedTime: 0,
-    paceGoal: 0.00, // Add this if you are passing paceGoal
-    date: 'Sat Sep 14'
+    paceGoal: 0.00,
+    date: 'Sat Sep 14',
   });
 
   const handleMetricsUpdate = (speed, elapsedTime, paceGoal, date) => {
@@ -29,10 +30,28 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';  // Person icon for Profile
+            } else if (route.name === 'History') {
+              iconName = focused ? 'fitness' : 'fitness-outline';  // Running man icon for History
+            } else if (route.name === 'Run') {
+              iconName = focused ? 'timer' : 'timer-outline';  // Timer icon for Run
+            }
+
+            return <Icon name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
         <Tab.Screen
           name="History"
-          children={(props) => <History {...props} metrics={metrics} />} // Pass metrics to History
+          children={(props) => <History {...props} metrics={metrics} />}
         />
         <Tab.Screen
           name="Run"

@@ -21,7 +21,7 @@ const SetGoal = ({ onPaceUpdate }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder='Enter your pace goal'
+        placeholder=''
         value={newPaceGoal}
         onChangeText={setNewPaceGoal}
         keyboardType='numeric'

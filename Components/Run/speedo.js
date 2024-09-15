@@ -169,6 +169,8 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={{ textAlign: 'center' }}>Set Goal Speed(m/s):</Text>
+
       <SetGoal />
       <View style={{ position: 'absolute', alignSelf: 'center' }}>
         <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
