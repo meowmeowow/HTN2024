@@ -11,23 +11,35 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  const updateRunningMetrics = (state) => {
-    return
-  }
+  const [metrics, setMetrics] = useState({
+    speed: null,
+    elapsedTime: 0,
+    paceGoal: 0.00, // Add this if you are passing paceGoal
+    date: 'Sat Sep 14'
+  });
 
+  const handleMetricsUpdate = (speed, elapsedTime, paceGoal, date) => {
+    setMetrics({
+      speed,
+      elapsedTime,
+      paceGoal,
+      date
+    });
+  };
 
   return (
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen
           name="History"
-          component={History}
+          children={(props) => <History {...props} metrics={metrics} />} // Pass metrics to History
         />
         <Tab.Screen
           name="Run"
-          component={Speedo}
           options={{ title: 'Run' }}
-        />
+        >
+          {(props) => <Speedo {...props} updateRunningMetrics={handleMetricsUpdate} />}
+        </Tab.Screen>
         <Tab.Screen
           name="Profile"
           component={Profile}

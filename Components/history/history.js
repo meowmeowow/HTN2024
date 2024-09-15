@@ -1,64 +1,93 @@
-// History.js
-import React, {useState} from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-// Define the SAVED_RUNS object and runs array
+// Existing runs array
+const runs = [
+    [10, 45, 'Sat Sep 14', 112], // speed, time, date, goal_pace
+    [10, 45, 'Sat Sep 14', 112],
+    [10, 45, 'Sat Oct 23', 112]
+];
 
-
-const History = () => {
-    const runs = [
-        [10, 4, 60, 120624, 123], // pace, miles, time, date, goal_pace
-        [20, 5, 20, 120524, 123],
-        [120, 5, 12045, 12056, 123],
+const History = ({ metrics }) => {
+    // Ensure metrics is defined and has correct format
+    const additionalRun = [
+        metrics.speed || 0,
+        metrics.elapsedTime || 0,
+        metrics.date || 'Unknown Date',
+        metrics.paceGoal || 0
     ];
 
+    // Combine runs array with the additional run
+    const allRuns = [...runs, additionalRun];
 
-    const HistoryComponent = ({ pace, kilometers, time, date, goalPace }) => {
+    const HistoryComponent = ({ pace, time, date, goalPace }) => {
+        const backgroundColor = pace >= goalPace ? '#FFDDDD' : '#65A06B';
         return (
             <View style={styles.item}>
                 <View style={styles.rightRect}>
                     <View style={styles.flexPace}>
-                        <Text style={styles.Pace}>{pace}</Text>
-                        <Text style = {{alignSelf: 'flex-end' }}> pace</Text>
+                        <View style={styles.paceContainer}>
+                            <Text style={styles.Pace}>{pace}</Text>
+                            <Text style={styles.units}> Pace {'\n'}(min/km)</Text>
+                        </View>
+                        <View style={styles.goalContainer}>
+                            <Text style={styles.goal}>Goal Pace: {goalPace}</Text>
+                        </View>
                     </View>
-                
-                    <Text style={styles.text}>Kilometers: {kilometers}</Text>
-                    <Text style={styles.text}>Time: {time} minutes</Text>
-                    <Text style={styles.text}>Date: {date}</Text>
-                    <Text style={styles.text}>Goal Pace: {goalPace}</Text>
+                    <View style={styles.stuff}>
+                        <Text style={styles.text}>{time} min  | </Text>
+                        <Text style={styles.text}>{date}</Text>
+                    </View>
                 </View>
             </View>
         );
     };
 
-
     return (
         <View style={styles.container}>
-            {runs.map((run, index) => (
+            {allRuns.map((run, index) => (
                 <HistoryComponent
-                    
                     key={index}
                     pace={run[0]}
-                    miles={run[1]}
-                    time={run[2]}
-                    date={run[3]}
-                    goalPace={run[4]}
+                    time={run[1]}
+                    date={run[2]}
+                    goalPace={run[3]}
                 />
             ))}
-            
         </View>
     );
 };
-
-
-//edit
 const styles = StyleSheet.create({
     flexPace:
     { flexDirection: 'row', 
-      justifyContent: 'flex-start', 
-      alignItems: 'center',
-      alignItems: 'flex-end'
-    
+      justifyContent: 'space-between', 
+      fontFamily: 'Inter',
+    },
+
+    paceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center', // Align items vertically in pace container
+    },
+
+    paceContainer: {
+        flexDirection: 'row',
+        alignItems: 'baseline', // Align items vertically within pace container
+
+    },
+
+    stuff: {
+        flexDirection: 'row',
+    },
+
+    units: {
+        fontSize: 12,
+        marginLeft: 5,
+        opacity: 0.4,
+    },
+
+    goal: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
 
     rightRect: {
@@ -67,7 +96,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
     },
     Pace: {
-        fontSize: 30,
+        fontSize: 50,
         fontWeight: 'bold',
     },
     container: {
@@ -85,7 +114,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     text: {
-        fontFamily: 'Poppins-Black'
+        fontFamily: 'Poppins-Black',
+        padding: 2,
     },
 });
 

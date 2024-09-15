@@ -34,12 +34,7 @@ const fav_jams_list = [
 ];
 
 // Profile Component with Navigation Stack
-const Profile = ({route}) => {
-  const { setGoalPace } = route.params;
-
-  const updateGoalPace = (newGoal) => {
-    setGoalPace(newGoal);
-  };
+const Profile = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Settings" component={Settings} />
