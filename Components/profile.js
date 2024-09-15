@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, Modal, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Button,
+  StyleSheet,
+  Modal,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
-// Initial affirmations
 const initialMotivatorList = [
   "Wow I love walking my dog in the morning!",
   "I have such good friends",
@@ -16,101 +27,136 @@ const initialDemotivatorList = [
   "I just broke up with my partner"
 ];
 
-// Settings Component
-const Settings = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Positive Affirmations"
-        onPress={() => navigation.navigate('Positive Affirmations')}
-      />
-      <Button
-        title="Motivating Affirmations"
-        onPress={() => navigation.navigate('Motivating Affirmations')}
-      />
-    </View>
-  );
-};
-
-// Motivating Component
-const Motivating = () => {
-  const [affirmations, setAffirmations] = useState(initialMotivatorList);
+// Profile Screen Component
+const ProfileScreen = ({ navigation }) => {
+  const [profilePhoto, setProfilePhoto] = useState('https://via.placeholder.com/150');
+  const [name, setName] = useState('John Doe');
+  const [bio, setBio] = useState('This is a short bio.');
+  const [isEditing, setIsEditing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedAffirmationType, setSelectedAffirmationType] = useState(null);
   const [newAffirmation, setNewAffirmation] = useState('');
+  const [newDemotivation, setNewDemotivation] = useState('');
+  const [motivatorList, setMotivatorList] = useState(initialMotivatorList);
+  const [demotivatorList, setDemotivatorList] = useState(initialDemotivatorList);
 
   const addAffirmation = () => {
     if (newAffirmation.trim()) {
-      setAffirmations([...affirmations, newAffirmation]);
+      setMotivatorList([...motivatorList, newAffirmation]);
       setNewAffirmation('');
       setModalVisible(false);
+    } else {
+      Alert.alert('Error', 'Affirmation cannot be empty');
     }
   };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.text}>{item}</Text>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={affirmations}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
-      <Button title="Add Positive Affirmation" onPress={() => setModalVisible(true)} />
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <TextInput
-            placeholder="Enter new affirmation"
-            value={newAffirmation}
-            onChangeText={setNewAffirmation}
-            style={styles.input}
-          />
-          <Button title="Add" onPress={addAffirmation} />
-          <Button title="Cancel" onPress={() => setModalVisible(false)} />
-        </View>
-      </Modal>
-    </View>
-  );
-};
-
-// Demotivating Component
-const Demotivating = () => {
-  const [demotivations, setDemotivations] = useState(initialDemotivatorList);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newDemotivation, setNewDemotivation] = useState('');
 
   const addDemotivation = () => {
     if (newDemotivation.trim()) {
-      setDemotivations([...demotivations, newDemotivation]);
+      setDemotivatorList([...demotivatorList, newDemotivation]);
       setNewDemotivation('');
       setModalVisible(false);
+    } else {
+      Alert.alert('Error', 'Demotivation cannot be empty');
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.text}>{item}</Text>
+  const renderAffirmationItem = ({ item, index }) => (
+    <View style={styles.listItem}>
+      <Text style={styles.listText}>{item}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          const updatedList = motivatorList.filter((_, i) => i !== index);
+          setMotivatorList(updatedList);
+        }}
+      >
+        <Text style={styles.deleteText}>✖</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderDemotivationItem = ({ item, index }) => (
+    <View style={styles.listItem}>
+      <Text style={styles.listText}>{item}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          const updatedList = demotivatorList.filter((_, i) => i !== index);
+          setDemotivatorList(updatedList);
+        }}
+      >
+        <Text style={styles.deleteText}>✖</Text>
+      </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={demotivations}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
-      <Button title="Add Motivating Affirmation" onPress={() => setModalVisible(true)} />
+    <ScrollView style={styles.container}>
+      <View style={styles.profileContainer}>
+        <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
+        <TouchableOpacity
+          style={styles.changePhotoButton}
+          onPress={() => {/* Handle photo change */}}
+        >
+          <Text style={styles.changePhotoText}>Change Photo</Text>
+        </TouchableOpacity>
+        {isEditing ? (
+          <View style={styles.editContainer}>
+            <TextInput
+              value={name}
+              onChangeText={setName}
+              style={styles.input}
+              placeholder="Enter your name"
+            />
+            <TextInput
+              value={bio}
+              onChangeText={setBio}
+              style={[styles.input, styles.bioInput]}
+              placeholder="Enter your bio"
+              multiline
+            />
+            <Button title="Save" onPress={() => setIsEditing(false)} />
+            <Button title="Cancel" onPress={() => setIsEditing(false)} />
+          </View>
+        ) : (
+          <View style={styles.profileDetails}>
+            <Text style={styles.profileName}>{name}</Text>
+            <Text style={styles.profileBio}>{bio}</Text>
+            <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
+          </View>
+        )}
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Add Positive Affirmation"
+            onPress={() => {
+              setSelectedAffirmationType('positive');
+              setModalVisible(true);
+            }}
+          />
+          <Button
+            title="Add Negative Affirmation"
+            onPress={() => {
+              setSelectedAffirmationType('negative');
+              setModalVisible(true);
+            }}
+          />
+        </View>
+      </View>
+
+      <View style={styles.listContainer}>
+        <Text style={styles.sectionTitle}>Positive Affirmations</Text>
+        <FlatList
+          data={motivatorList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderAffirmationItem}
+        />
+        <Text style={styles.sectionTitle}>Negative Affirmations</Text>
+        <FlatList
+          data={demotivatorList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderDemotivationItem}
+        />
+      </View>
+
+      {/* Modal for adding new affirmation */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -118,27 +164,41 @@ const Demotivating = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <TextInput
-            placeholder="Enter new affirmation"
-            value={newDemotivation}
-            onChangeText={setNewDemotivation}
-            style={styles.input}
-          />
-          <Button title="Add" onPress={addDemotivation} />
-          <Button title="Cancel" onPress={() => setModalVisible(false)} />
+          <View style={styles.modalContent}>
+            {selectedAffirmationType === 'positive' ? (
+              <>
+                <TextInput
+                  placeholder="Enter new affirmation"
+                  value={newAffirmation}
+                  onChangeText={setNewAffirmation}
+                  style={styles.input}
+                />
+                <Button title="Add Affirmation" onPress={addAffirmation} />
+              </>
+            ) : (
+              <>
+                <TextInput
+                  placeholder="Enter new demotivation"
+                  value={newDemotivation}
+                  onChangeText={setNewDemotivation}
+                  style={styles.input}
+                />
+                <Button title="Add Demotivation" onPress={addDemotivation} />
+              </>
+            )}
+            <Button title="Cancel" onPress={() => setModalVisible(false)} />
+          </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
-// Profile Component with Navigation Stack
-const Profile = () => {
+// Navigator Component
+const ProfileNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="Positive Affirmations" component={Motivating} />
-      <Stack.Screen name="Motivating Affirmations" component={Demotivating} />
+      <Stack.Screen name="Settings" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };
@@ -147,19 +207,45 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
     padding: 10,
   },
-  item: {
-    padding: 15,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
+  profileContainer: {
+    alignItems: 'center',
+    paddingBottom: 20,
   },
-  text: {
+  profilePhoto: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    marginBottom: 10,
+  },
+  changePhotoButton: {
+    marginBottom: 20,
+  },
+  changePhotoText: {
     fontSize: 16,
+    color: '#007BFF',
+  },
+  profileDetails: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  profileBio: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#666',
+    marginVertical: 10,
+  },
+  editContainer: {
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   input: {
     height: 40,
@@ -168,18 +254,59 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 8,
     borderRadius: 5,
-    width: '80%',
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  bioInput: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
   },
   listContainer: {
-    flexGrow: 1,
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    color: '#333',
+  },
+  listItem: {
+    padding: 15,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+  },
+  listText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  deleteText: {
+    fontSize: 16,
+    color: '#FF0000',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
     padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
   },
 });
 
-export default Profile;
+export default ProfileNavigator;
