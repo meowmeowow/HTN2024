@@ -4,7 +4,8 @@ import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-loca
 import SetGoal from './setGoal';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 let tempPaceGoal = 5;
-let display, levelColour;
+let display = 0;
+let levelColour = 'grey';
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
