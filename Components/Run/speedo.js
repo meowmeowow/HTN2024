@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Modal, TouchableOpacity } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { Bar as ProgressBar } from 'react-native-progress'; // Correct import
 import axios from 'axios';
 import * as Speech from 'expo-speech';
 import SetGoal from './setGoal';
@@ -21,8 +21,8 @@ const initialDemotivatorList = [
 ];
 
 // Define speed thresholds
-const LOW_SPEED_THRESHOLD = 1; // speed below which message is fetched
-const HIGH_SPEED_THRESHOLD = 2; // speed above which message is fetched
+const LOW_SPEED_THRESHOLD = 0.5; // speed below which message is fetched
+const HIGH_SPEED_THRESHOLD = 1.5; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -34,7 +34,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [levelColour, setLevelColour] = useState('gray');
   const [story, setStory] = useState('');
   const [error, setError] = useState('');
-  
+
   const timerRef = useRef(null); // Ref to store interval timer
   const locationSubscriptionRef = useRef(null); // Ref for location subscription
   const date = 'Sat Sep 15';
@@ -95,6 +95,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     setRunning(false);
     setPaused(false);
     setShowModal(true);
+    resetValues();
   };
 
   useEffect(() => {
@@ -110,7 +111,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
             timeInterval: 1000,
           },
           (location) => {
-            const userSpeed = location.coords.speed  ; // Adjust speed if needed
+            const userSpeed = location.coords.speed*1.5; // Adjust speed if needed
             setSpeed(userSpeed);
             setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
 
@@ -183,47 +184,48 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ textAlign: 'center' }}>Set Goal Speed (m/s):</Text>
+      <Text style={styles.title}>Set Goal Speed (m/s):</Text>
       <SetGoal />
 
-      <View style={{ position: 'absolute', alignSelf: 'center' }}>
-        <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
-        <Text style={{ textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
-        <Text style={{ textAlign: 'center' }}>Distance: {(avgspeed * elapsedTime) / 1000} km</Text>
+      <View style={styles.statsContainer}>
+        <Text style={styles.statsText}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
+        <Text style={styles.statsText}>Time: {formatTime(elapsedTime)}</Text>
+        <Text style={styles.statsText}>Distance: {Math.round((avgspeed * elapsedTime) / 100)} m</Text>
 
-        <View style={{ transform: [{ rotateZ: '180deg' }] }}>
-          <AnimatedCircularProgress
-            size={120}
-            width={15}
-            fill={display}
-            tintColor={levelColour}
-            backgroundColor="#f5f5f5"
+        <View style={styles.progressBarContainer}>
+          <ProgressBar
+            progress={display / 100}
+            color={levelColour}
+            style={styles.progressBar}
+            unfilledColor="#f5f5f5"
           />
         </View>
 
-        {!running ? (
-          <TouchableOpacity style={styles.button} onPress={startRun}>
-            <Text style={styles.buttonText}>Start Run</Text>
-          </TouchableOpacity>
-        ) : paused ? (
-          <>
-            <TouchableOpacity style={styles.button} onPress={resumeRun}>
-              <Text style={styles.buttonText}>Resume Run</Text>
+        <View style={styles.buttonsContainer}>
+          {!running ? (
+            <TouchableOpacity style={styles.button} onPress={startRun}>
+              <Text style={styles.buttonText}>Start Run</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
-              <Text style={styles.buttonText}>Stop Run</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <TouchableOpacity style={styles.button} onPress={pauseRun}>
-              <Text style={styles.buttonText}>Pause Run</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
-              <Text style={styles.buttonText}>Stop Run</Text>
-            </TouchableOpacity>
-          </>
-        )}
+          ) : paused ? (
+            <>
+              <TouchableOpacity style={styles.button} onPress={resumeRun}>
+                <Text style={styles.buttonText}>Resume Run</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
+                <Text style={styles.buttonText}>Stop Run</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.button} onPress={pauseRun}>
+                <Text style={styles.buttonText}>Pause Run</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
+                <Text style={styles.buttonText}>Stop Run</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </View>
 
       <Modal
@@ -236,8 +238,9 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       >
         <View style={styles.modalContainer}>
           <Text style={styles.modalText}>Run Stopped!</Text>
-          <View style={{ margin: 20, borderRadius: 10 }}>
+          <View style={styles.modalButtonContainer}>
             <Button title="Log today's jog?" onPress={handleLogAndHide} />
+
           </View>
           <Text style={{ color: 'white', top: 50 }} onPress={hideModal}>Exit</Text>
         </View>
@@ -254,30 +257,66 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  title: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  statsContainer: {
+    alignItems: 'center',
+  },
+  statsText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  progressBarContainer: {
+    width: '80%',
+    height: 20,
+    marginVertical: 10,
+  },
+  progressBar: {
+    height: 10,
+  },
+  buttonsContainer: {
+    marginTop: 20,
+  },
   button: {
-    backgroundColor: 'blue',
-    padding: 18,
-    borderRadius: 10,
-    margin: 10,
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
   },
   stopButton: {
-    backgroundColor: 'red',
-    padding: 18,
-    borderRadius: 10,
-    margin: 10,
+    backgroundColor: '#FF0000',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalText: {
-    fontSize: 20,
-    color: '#fff',
+    fontSize: 18,
+    marginBottom: 20,
+    color: '#FFFFFF',
+  },
+  modalButtonContainer: {
+    margin: 20,
+    borderRadius: 10,
+  },
+  errorText: {
+    color: 'red',
+  },
+  storyText: {
+    color: 'white',
   },
 });
 

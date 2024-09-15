@@ -4,6 +4,7 @@ import Speedo from './Components/Run/speedo';
 import History from './Components/history/history';
 import Profile from './Components/profile';
 
+
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

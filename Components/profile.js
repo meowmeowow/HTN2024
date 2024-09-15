@@ -13,6 +13,9 @@ import {
   Alert,
 } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +32,7 @@ const initialDemotivatorList = [
 
 // Profile Screen Component
 const ProfileScreen = ({ navigation }) => {
-  const [profilePhoto, setProfilePhoto] = useState('https://via.placeholder.com/150');
+  const [profilePhoto, setProfilePhoto] = useState('https://philosophy.utoronto.ca/wp-content/uploads/Michael_Rosenthal_sq_4039-150x150.jpg');
   const [name, setName] = useState('John Doe');
   const [bio, setBio] = useState('This is a short bio.');
   const [isEditing, setIsEditing] = useState(false);
