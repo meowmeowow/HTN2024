@@ -51,20 +51,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
     getLocation();
   }, []);
- if (speed*(50/3)/(tempPaceGoal)*100 > 100) {
-    display = 100;
-  } else {
-    display = speed*(50/3)/(tempPaceGoal)*100;
-  }
-  if (display < 25) {
-    levelColour = '#cc0000';
-  } else if (display < 50) {
-    levelColour = '#e69138';
-  } else if (display < 75) {
-    levelColour = '#f1c232'
-  } else  {
-    levelColour = '#6aa84f';
-  }
+
   useEffect(() => {
     if (running && !paused) {
       timerRef.current = setInterval(() => {
@@ -80,6 +67,20 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   const startRun = () => {
     setRunning(true);
+     if (speed*(50/3)/(tempPaceGoal)*100 > 100) {
+    display = 100;
+  } else {
+    display = speed*(50/3)/(tempPaceGoal)*100;
+  }
+  if (display < 25) {
+    levelColour = '#cc0000';
+  } else if (display < 50) {
+    levelColour = '#e69138';
+  } else if (display < 75) {
+    levelColour = '#f1c232'
+  } else  {
+    levelColour = '#6aa84f';
+  }
     setPaused(false);
   };
 
