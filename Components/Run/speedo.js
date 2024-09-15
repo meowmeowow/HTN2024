@@ -5,7 +5,7 @@ import { Bar as ProgressBar } from 'react-native-progress';
 import axios from 'axios';
 import * as Speech from 'expo-speech';
 import SetGoal from './setGoal';
-import TypingAnimation from '../TypingAnimation';
+import TypingAnimation from '../utils/TypingAnimation';
 const moodHappy = require('./CoachMood/CoachSmirk.png');
 const moodMad = require('./CoachMood/AngryCoach.png');
 const moodNeutral = require('./CoachMood/ColdChicken.png');
@@ -44,7 +44,7 @@ const LOW_SPEED_THRESHOLD = 0.5; // speed below which message is fetched
 const HIGH_SPEED_THRESHOLD = 1.5; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
-  const [blab, setBlab] = useState("Another day, another you, let's get going!");
+  const [blab, setBlab] = useState("You're the first student I've had that was this unathletic. It's time to push, push, PUSH!!! quack");
   const [speed, setSpeed] = useState(null);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -187,19 +187,27 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     const secs = seconds % 60;
     return `${minutes}m ${secs}s`;
   };
+  const getRandomBinary = () => {
+    return Math.floor(Math.random() * 2);
+  };
 
   const calculateDisplay = (userSpeed) => {
     let tempDisplay = Math.min(userSpeed/ paceGoal * 100, 100);
     let color;
     if (tempDisplay < 25) {
       setCoachState(moodMad);
+      setBlab(potentialSpeech.angryCoach[getRandomBinary])
       color = '#cc0000'; // Red for low
     } else if (tempDisplay < 50) {
       color = '#e69138'; // Yellow for medium
       setCoachState(moodNeutral);
+      setBlab(potentialSpeech.neutralCoachCoach[getRandomBinary])
+
 
     } else if (tempDisplay < 75) {
       setCoachState(moodHappy);
+      setBlab(potentialSpeech.happyCoach[getRandomBinary])
+
 
       color = '#f1c232'; // Light Yellow
     } else {
