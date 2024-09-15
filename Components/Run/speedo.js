@@ -5,7 +5,20 @@ import SetGoal from './setGoal';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 let tempPaceGoal = 5;
 let display = 0;
-let levelColour = 'grey';
+let levelColour = 'gray';
+let userSpeed = 0;
+
+function drawProgress() {
+  <View style={{transform: [{rotateZ:'180deg'}]} }>
+        <AnimatedCircularProgress
+        size={120}
+        width={15}
+        fill={display}
+        tintColor= {levelColour}
+        backgroundColor="#FFF" />
+  </View>
+}
+drawProgress();
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -14,7 +27,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const timerRef = useRef(null); // Ref to store interval timer
-  const date = 'Sat Sep 14';
+  const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
 
   const onRunningMetricsLog = () => {
@@ -36,7 +49,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
             timeInterval: 1000,
           },
           (location) => {
-            const userSpeed = location.coords.speed;
+            userSpeed = location.coords.speed;
             setSpeed(userSpeed);
             setAvgSpeed(avgspeed + speed);
           }
@@ -68,20 +81,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   const startRun = () => {
     setRunning(true);
-     if (speed*(50/3)/(tempPaceGoal)*100 > 100) {
-    display = 100;
-  } else {
-    display = speed*(50/3)/(tempPaceGoal)*100;
-  }
-  if (display < 25) {
-    levelColour = '#cc0000';
-  } else if (display < 50) {
-    levelColour = '#e69138';
-  } else if (display < 75) {
-    levelColour = '#f1c232'
-  } else  {
-    levelColour = '#6aa84f';
-  }
     setPaused(false);
   };
 
@@ -108,6 +107,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const hideModal = () => {
     setShowModal(false);
   };
+
   return (
     <View style={styles.container}>
       <SetGoal />
@@ -120,8 +120,9 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         width={15}
         fill={display}
         tintColor= {levelColour}
-        backgroundColor="#FFF" />
-       </View>
+        backgroundColor="#f5f5f5" />
+        </View>
+
         {!running ? (
           <Button style={styles.button} title="Start Run" onPress={startRun} />
         ) : paused ? (
@@ -154,6 +155,27 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     </View>
   );
 };
+
+function speedChange()  {
+  if (userSpeed*(50/3)/(tempPaceGoal)*100 > 100) {
+    display = 100;
+  } else {
+    display = userSpeed*(50/3)/(tempPaceGoal)*100;
+  }
+  if (display < 25) {
+    levelColour = '#cc0000';
+  } else if (display < 50) {
+    levelColour = '#e69138';
+  } else if (display < 75) {
+    levelColour = '#f1c232'
+  } else  {
+    levelColour = '#6aa84f';
+  }
+}
+
+setInterval(function() {
+  speedChange();
+}, 2000);
 
 // Styles
 const styles = StyleSheet.create({
