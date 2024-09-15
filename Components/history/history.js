@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet ,ScrollView} from 'react-native';
 
 // Existing runs array
 const runs = [
-    [10, 45, 'Sat Sep 14', 112], // speed, time, date, goal_pace
-    [10, 45, 'Sat Sep 14', 112],
-    [10, 45, 'Sat Oct 23', 112]
+    [10, 20, 'Wed Sep 4', 7], // speed, time, date, goal_pace
+    [8, 15, 'Thu Aug 22', 7],
+    [12, 35, 'Tue Aug 13', 7],
+    [12, 35, 'Wed Oct 23', 8],
+    [12, 35, 'Wed Oct 23', 8],
+    [12, 35, 'Wed Oct 23', 8.5],
+    [12, 35, 'Wed Oct 23', 8.5],
+
 ];
 
 const History = ({ metrics }) => {
@@ -18,11 +23,12 @@ const History = ({ metrics }) => {
     ];
 
     // Combine runs array with the additional run
-    const allRuns = [...runs, additionalRun];
+    const allRuns = [...runs];
 
     const HistoryComponent = ({ pace, time, date, goalPace }) => {
         const backgroundColor = pace >= goalPace ? '#FFDDDD' : '#65A06B';
         return (
+            
             <View style={styles.item}>
                 <View style={styles.rightRect}>
                     <View style={styles.flexPace}>
@@ -44,6 +50,8 @@ const History = ({ metrics }) => {
     };
 
     return (
+        <ScrollView style={styles.scrollView}>
+
         <View style={styles.container}>
             {allRuns.map((run, index) => (
                 <HistoryComponent
@@ -55,6 +63,8 @@ const History = ({ metrics }) => {
                 />
             ))}
         </View>
+        </ScrollView>
+
     );
 };
 const styles = StyleSheet.create({
