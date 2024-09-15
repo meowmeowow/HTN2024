@@ -2,6 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Modal,TouchableOpacity } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
 import SetGoal from './setGoal';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+let tempPaceGoal = 5;
+let display, levelColour;
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -48,7 +51,20 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
     getLocation();
   }, []);
-
+ if (speed*(50/3)/(tempPaceGoal)*100 > 100) {
+    display = 100;
+  } else {
+    display = speed*(50/3)/(tempPaceGoal)*100;
+  }
+  if (display < 25) {
+    levelColour = '#cc0000';
+  } else if (display < 50) {
+    levelColour = '#e69138';
+  } else if (display < 75) {
+    levelColour = '#f1c232'
+  } else  {
+    levelColour = '#6aa84f';
+  }
   useEffect(() => {
     if (running && !paused) {
       timerRef.current = setInterval(() => {
@@ -96,6 +112,14 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       <View style={{position: 'absolute', alignSelf: 'center'}}>
         <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
         <Text style={{ textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
+         <View style={{transform: [{rotateZ:'180deg'}]} }>
+      <AnimatedCircularProgress
+        size={120}
+        width={15}
+        fill={display}
+        tintColor= {levelColour}
+        backgroundColor="#FFF" />
+       </View>
 
         {!running ? (
           <Button style={styles.button} title="Start Run" onPress={startRun} />
