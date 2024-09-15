@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import { View, Button, Text, StyleSheet,FlatList } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import * as Speech from 'expo-speech';
 import { CohereClient } from 'cohere-ai';
 
@@ -125,7 +127,26 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ecf0f1',
-        padding: 8,
+    backgroundColor: '#fff',
+    padding: 10,
+  },
+  item: {
+    padding: 15,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+  },
+  text: {
+    fontSize: 16,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+  },
+});
