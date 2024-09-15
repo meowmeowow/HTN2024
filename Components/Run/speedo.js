@@ -215,7 +215,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Set Goal Speed (m/s):</Text>
       <SetGoal/>
 
       <View style={styles.statsContainer}>

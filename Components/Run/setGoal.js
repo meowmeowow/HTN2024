@@ -2,22 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 
 const SetGoal = ({ onPaceUpdate }) => {
-  const [paceGoal, setPaceGoal] = useState(0.00);
-  const [newPaceGoal, setNewPaceGoal] = useState(paceGoal.toString());
+  // Initialize newPaceGoal with an empty string
+  const [newPaceGoal, setNewPaceGoal] = useState('');
 
-  useEffect(() => {
-    setNewPaceGoal(paceGoal.toString());
-  }, [paceGoal]);
-
+  // Convert newPaceGoal to a number when saving
   const handleSaveGoal = () => {
     const goal = parseFloat(newPaceGoal);
     if (!isNaN(goal)) {
-      setPaceGoal(goal);
+      // Notify parent with new goal
       if (onPaceUpdate) {
-        onPaceUpdate({ goal }); // Notify parent with new goal
+        onPaceUpdate({ goal });
       }
     }
   };
+
+  // Update the newPaceGoal state when paceGoal is updated externally
+  useEffect(() => {
+    // Optionally handle updates if paceGoal is passed as a prop
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -41,7 +43,6 @@ const styles = StyleSheet.create({
   },
   input: {
     textAlign: 'center',
-
     height: 40,
     width: '80%',
     borderColor: '#ddd',
