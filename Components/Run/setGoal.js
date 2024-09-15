@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 
-const SetGoal = () => {
-    const [paceGoal, setPaceGoal] = useState(0.00);
-    const [isEditing, setIsEditing] = useState(false);
-    const [newPaceGoal, setNewPaceGoal] = useState(paceGoal === 0 ? '' : paceGoal.toString());
-  
+const SetGoal = ({ onPaceUpdate }) => {
+  const [paceGoal, setPaceGoal] = useState(0.00);
+  const [newPaceGoal, setNewPaceGoal] = useState(paceGoal.toString());
+
+  useEffect(() => {
+    setNewPaceGoal(paceGoal.toString());
+  }, [paceGoal]);
+
   const handleSaveGoal = () => {
     const goal = parseFloat(newPaceGoal);
     if (!isNaN(goal)) {
       setPaceGoal(goal);
+      onPaceUpdate({ goal }); // Notify parent with new goal
     }
   };
 

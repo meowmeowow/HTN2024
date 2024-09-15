@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, Button, Modal,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, Modal, TouchableOpacity } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
 import SetGoal from './setGoal';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -30,41 +30,49 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
 
-  const onRunningMetricsLog = () => {
-    updateRunningMetrics({
-      speed,
-      avgspeed,
-      date,
-      goal,
-    });
+  const logJog = () => {
+    updateRunningMetrics(avgspeed/(elapsedTime*10), elapsedTime, paceGoal, date)
   };
 
   useEffect(() => {
     const getLocation = async () => {
       const { status } = await requestPermissionsAsync();
       if (status === 'granted') {
-        const locationSubscription = await watchPositionAsync(
+        if (locationSubscriptionRef.current) {
+          locationSubscriptionRef.current.remove(); // Cleanup any existing subscription
+        }
+        locationSubscriptionRef.current = await watchPositionAsync(
           {
             accuracy: Accuracy.BestForNavigation,
-            timeInterval: 1000,
+            timeInterval: 100,
           },
           (location) => {
             userSpeed = location.coords.speed;
             setSpeed(userSpeed);
             setAvgSpeed(avgspeed + speed);
+            if (!paused) {
+              const userSpeed = location.coords.speed;
+              setSpeed(userSpeed);
+              setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
+            }
           }
         );
-
-        return () => {
-          if (locationSubscription) {
-            locationSubscription.remove();
-          }
-        };
       }
     };
 
-    getLocation();
-  }, []);
+    if (running) {
+      getLocation();
+    } else if (locationSubscriptionRef.current) {
+      locationSubscriptionRef.current.remove(); // Cleanup subscription if not running
+    }
+
+    // Cleanup subscription on component unmount
+    return () => {
+      if (locationSubscriptionRef.current) {
+        locationSubscriptionRef.current.remove();
+      }
+    };
+  }, [running, paused]);
 
   useEffect(() => {
     if (running && !paused) {
@@ -72,7 +80,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         setElapsedTime((prevTime) => prevTime + 1);
       }, 1000);
 
-      // Cleanup timer on component unmount or when running stops
       return () => clearInterval(timerRef.current);
     } else {
       clearInterval(timerRef.current);
@@ -104,6 +111,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     const secs = seconds % 60;
     return `${minutes}m ${secs}s`;
   };
+
   const hideModal = () => {
     setShowModal(false);
   };
@@ -124,16 +132,41 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         </View>
 
         {!running ? (
-          <Button style={styles.button} title="Start Run" onPress={startRun} />
+          <TouchableOpacity
+            style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+            onPress={startRun}
+          >
+            <Text style={{ color: 'white' }}>Start Run</Text>
+          </TouchableOpacity>
         ) : paused ? (
           <>
-            <Button style={styles.button} title="Resume Run" onPress={resumeRun} />
-            <Button style={styles.button} title="Stop Run" onPress={stopRun} />
+            <TouchableOpacity
+              style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+              onPress={resumeRun}
+            >
+              <Text style={{ color: 'white' }}>Resume Run</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ backgroundColor: 'red', padding: 18, borderRadius: 10, margin: 10 }}
+              onPress={stopRun}
+            >
+              <Text style={{ color: 'white' }}>Stop Run</Text>
+            </TouchableOpacity>
           </>
         ) : (
           <>
-            <Button style={styles.button} title="Pause Run" onPress={pauseRun} />
-            <Button style={styles.button} title="Stop Run" onPress={stopRun} />
+            <TouchableOpacity
+              style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+              onPress={pauseRun}
+            >
+              <Text style={{ color: 'white' }}>Pause Run</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ backgroundColor: 'red', padding: 18, borderRadius: 10, margin: 10 }}
+              onPress={stopRun}
+            >
+              <Text style={{ color: 'white' }}>Stop Run</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
@@ -148,8 +181,10 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       >
         <View style={styles.modalContainer}>
           <Text style={styles.modalText}>Run Stopped!</Text>
-          <Button title="Log today's jog?" onPress={hideModal} />
-          <Text style={{ color: 'white' }} onPress={hideModal}>Exit</Text>
+          <View style={{ margin: 20, borderRadius: 10 }}>
+            <Button title="Log today's jog?" onPress={handleLogAndHide} />
+          </View>
+          <Text style={{ color: 'white', top: 50 }} onPress={hideModal}>Exit</Text>
         </View>
       </Modal>
     </View>
@@ -185,12 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  button: {
-    borderRadius: 5,
-    width: 20,
-    padding: 10, // Adjust the padding as needed
-    height: 40,
-  },
+
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
