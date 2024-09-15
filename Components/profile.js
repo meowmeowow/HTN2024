@@ -1,127 +1,147 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, TextInput } from 'react-native';
+import { View, Text, FlatList, Button, StyleSheet, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-let paceGoal = 10;
 const Stack = createNativeStackNavigator();
-``
-const DREADFUL_JAMS = {
-    PATH: 0,
-    NAME: 1,
-};
 
-const dread_jams_list = [
-    ["path to file", "song2"],
+// Initial affirmations
+const initialMotivatorList = [
+  "Wow I love walking my dog in the morning!",
+  "I have such good friends",
+  "I feel good about myself"
 ];
-
-const SAVED_MOTIVATOR = {
-    DATE: 0,
-    TEXT: 1,
-};
-
-const motivator_list = [
-    [1020202, "amazing"],
+const initialDemotivatorList = [
+  "Everyone bullies me",
+  "That time in 7th grade I came in last in the run",
+  "I just broke up with my partner"
 ];
-
-const FAVORITE_JAMS = {
-    PATH: 0,
-    NAME: 1,
-};
-
-const fav_jams_list = [
-    ["path to file", "song 1"],
-];
-
-// Profile Component with Navigation Stack
-const Profile = ({route}) => {
-  const updateGoalPace = (newGoal) => {
-    setGoalPace(newGoal);
-  };
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="Motivators" component={Motivators} />
-      <Stack.Screen name="Favorite_Jams" component={Favorite_Jams} />
-      <Stack.Screen name="Dreadful_Jams" component={Dreadful_Jams} />
-    </Stack.Navigator>
-  );
-};
 
 // Settings Component
 const Settings = ({ navigation }) => {
-  
-
   return (
     <View style={styles.container}>
-      <Button title="Motivators" onPress={() => navigation.navigate('Motivators')} />
-      <Button title="Favorite Jams" onPress={() => navigation.navigate('Favorite_Jams')} />
-      <Button title="Dreadful Jams" onPress={() => navigation.navigate('Dreadful_Jams')} />
+      <Button
+        title="Positive Affirmations"
+        onPress={() => navigation.navigate('Positive Affirmations')}
+      />
+      <Button
+        title="Motivating Affirmations"
+        onPress={() => navigation.navigate('Motivating Affirmations')}
+      />
     </View>
   );
 };
 
-// Motivators Component
-const Motivators = () => {
+// Motivating Component
+const Motivating = () => {
+  const [affirmations, setAffirmations] = useState(initialMotivatorList);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newAffirmation, setNewAffirmation] = useState('');
+
+  const addAffirmation = () => {
+    if (newAffirmation.trim()) {
+      setAffirmations([...affirmations, newAffirmation]);
+      setNewAffirmation('');
+      setModalVisible(false);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.text}>Date: {item[SAVED_MOTIVATOR.DATE]}</Text>
-      <Text style={styles.text}>Text: {item[SAVED_MOTIVATOR.TEXT]}</Text>
+      <Text style={styles.text}>{item}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={motivator_list}
+        data={affirmations}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
       />
+      <Button title="Add Positive Affirmation" onPress={() => setModalVisible(true)} />
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TextInput
+            placeholder="Enter new affirmation"
+            value={newAffirmation}
+            onChangeText={setNewAffirmation}
+            style={styles.input}
+          />
+          <Button title="Add" onPress={addAffirmation} />
+          <Button title="Cancel" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
     </View>
   );
 };
 
-// Favorite_Jams Component
-const Favorite_Jams = () => {
+// Demotivating Component
+const Demotivating = () => {
+  const [demotivations, setDemotivations] = useState(initialDemotivatorList);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newDemotivation, setNewDemotivation] = useState('');
+
+  const addDemotivation = () => {
+    if (newDemotivation.trim()) {
+      setDemotivations([...demotivations, newDemotivation]);
+      setNewDemotivation('');
+      setModalVisible(false);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.text}>Path: {item[FAVORITE_JAMS.PATH]}</Text>
-      <Text style={styles.text}>Name: {item[FAVORITE_JAMS.NAME]}</Text>
+      <Text style={styles.text}>{item}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={fav_jams_list}
+        data={demotivations}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
       />
+      <Button title="Add Motivating Affirmation" onPress={() => setModalVisible(true)} />
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TextInput
+            placeholder="Enter new affirmation"
+            value={newDemotivation}
+            onChangeText={setNewDemotivation}
+            style={styles.input}
+          />
+          <Button title="Add" onPress={addDemotivation} />
+          <Button title="Cancel" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
     </View>
   );
 };
 
-// Dreadful_Jams Component
-const Dreadful_Jams = () => {
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.text}>Path: {item[DREADFUL_JAMS.PATH]}</Text>
-      <Text style={styles.text}>Name: {item[DREADFUL_JAMS.NAME]}</Text>
-    </View>
-  );
-
+// Profile Component with Navigation Stack
+const Profile = () => {
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={dread_jams_list}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-      />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="Positive Affirmations" component={Motivating} />
+      <Stack.Screen name="Motivating Affirmations" component={Demotivating} />
+    </Stack.Navigator>
   );
 };
-
-// Export the ProfileStack component
-export default Profile;
 
 // Styles
 const styles = StyleSheet.create({
@@ -148,5 +168,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 8,
     borderRadius: 5,
+    width: '80%',
+  },
+  listContainer: {
+    flexGrow: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
   },
 });
+
+export default Profile;
