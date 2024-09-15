@@ -13,7 +13,9 @@ const SetGoal = ({ onPaceUpdate }) => {
     const goal = parseFloat(newPaceGoal);
     if (!isNaN(goal)) {
       setPaceGoal(goal);
-      onPaceUpdate({ goal }); // Notify parent with new goal
+      if (onPaceUpdate) {
+        onPaceUpdate({ goal }); // Notify parent with new goal
+      }
     }
   };
 
@@ -21,7 +23,7 @@ const SetGoal = ({ onPaceUpdate }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder=''
+        placeholder='Enter pace goal'
         value={newPaceGoal}
         onChangeText={setNewPaceGoal}
         keyboardType='numeric'

@@ -6,7 +6,7 @@ import axios from 'axios';
 import * as Speech from 'expo-speech';
 import SetGoal from './setGoal';
 
-const API_URL = 'http://quickdraw.willowmail.com/api/data'; 
+const API_URL = 'http://quickdraw.willowmail.com/api/data';
 
 const initialMotivatorList = [
   "Wow I love walking my dog in the morning!",
@@ -22,7 +22,7 @@ const initialDemotivatorList = [
 
 // Define speed thresholds
 const LOW_SPEED_THRESHOLD = 1; // speed below which message is fetched
-const HIGH_SPEED_THRESHOLD = 3; // speed above which message is fetched
+const HIGH_SPEED_THRESHOLD = 2; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -46,10 +46,11 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       const response = await axios.post(API_URL, { 'message': messageType });
       const fetchedMessage = response.data.message;
       setStory(fetchedMessage);
-      Speech.speak(fetchedMessage, { language: 'en' });
+      if (running) {
+        Speech.speak(fetchedMessage, { language: 'en' });
+      }
     } catch (error) {
       setError('Failed to fetch message.');
-      Speech.speak('Error fetching message.', { language: 'en' });
     }
   };
 
@@ -66,6 +67,36 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     setShowModal(false);
   };
 
+  const resetValues = () => {
+    setSpeed(null);
+    setElapsedTime(0);
+    setAvgSpeed(0);
+    setDisplay(0);
+    setLevelColour('gray');
+    setStory('');
+    setError('');
+  };
+
+  const startRun = () => {
+    resetValues(); // Reset values for a new run
+    setRunning(true);
+    setPaused(false);
+  };
+
+  const pauseRun = () => {
+    setPaused(true);
+  };
+
+  const resumeRun = () => {
+    setPaused(false);
+  };
+
+  const stopRun = () => {
+    setRunning(false);
+    setPaused(false);
+    setShowModal(true);
+  };
+
   useEffect(() => {
     const getLocation = async () => {
       const { status } = await requestPermissionsAsync();
@@ -79,19 +110,22 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
             timeInterval: 1000,
           },
           (location) => {
-            const userSpeed = location.coords.speed**(1.5); // Adjust speed if needed
+            const userSpeed = location.coords.speed  ; // Adjust speed if needed
             setSpeed(userSpeed);
             setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
 
-            if (!paused) {
+            if (!paused || running) {
               calculateDisplay(userSpeed);
 
               // Fetch and speak message based on speed
-              if (userSpeed < LOW_SPEED_THRESHOLD && running == true) {
-                
-                fetchText('Can you make a short phrase reminding someone for '+ initialDemotivatorList[Math.floor(Math.random() * initialDemotivatorList.length)]+ "from the perspective of a goose");
-              } else if (userSpeed > HIGH_SPEED_THRESHOLD && running == true) {
-                fetchText('Can you make a short phrase praising someone for '+ initialMotivatorList[Math.floor(Math.random() * initialMotivatorList.length)]+ "from the perspective of a goose");
+              if (userSpeed < LOW_SPEED_THRESHOLD && running) {
+                fetchText('Can you make a short phrase reminding someone for ' +
+                          initialDemotivatorList[Math.floor(Math.random() * initialDemotivatorList.length)] +
+                          " from the perspective of a goose in an annoyed tone");
+              } else if (userSpeed > HIGH_SPEED_THRESHOLD && running) {
+                fetchText('Can you make a short phrase praising someone for ' +
+                          initialMotivatorList[Math.floor(Math.random() * initialMotivatorList.length)] +
+                          " from the perspective of a goose");
               }
             }
           }
@@ -125,26 +159,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     }
   }, [running, paused]);
 
-  const startRun = () => {
-    setRunning(true);
-    setPaused(false);
-  };
-
-  const pauseRun = () => {
-    setPaused(true);
-  };
-
-  const resumeRun = () => {
-    setPaused(false);
-  };
-
-  const stopRun = () => {
-    setRunning(false);
-    setPaused(false);
-    setElapsedTime(0); // Optionally reset the timer
-    setShowModal(true);
-  };
-
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -169,12 +183,14 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ textAlign: 'center' }}>Set Goal Speed(m/s):</Text>
-
+      <Text style={{ textAlign: 'center' }}>Set Goal Speed (m/s):</Text>
       <SetGoal />
+
       <View style={{ position: 'absolute', alignSelf: 'center' }}>
         <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
         <Text style={{ textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
+        <Text style={{ textAlign: 'center' }}>Distance: {(avgspeed * elapsedTime) / 1000} km</Text>
+
         <View style={{ transform: [{ rotateZ: '180deg' }] }}>
           <AnimatedCircularProgress
             size={120}
@@ -186,39 +202,24 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         </View>
 
         {!running ? (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={startRun}
-          >
+          <TouchableOpacity style={styles.button} onPress={startRun}>
             <Text style={styles.buttonText}>Start Run</Text>
           </TouchableOpacity>
         ) : paused ? (
           <>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={resumeRun}
-            >
+            <TouchableOpacity style={styles.button} onPress={resumeRun}>
               <Text style={styles.buttonText}>Resume Run</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.stopButton}
-              onPress={stopRun}
-            >
+            <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
               <Text style={styles.buttonText}>Stop Run</Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={pauseRun}
-            >
+            <TouchableOpacity style={styles.button} onPress={pauseRun}>
               <Text style={styles.buttonText}>Pause Run</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.stopButton}
-              onPress={stopRun}
-            >
+            <TouchableOpacity style={styles.stopButton} onPress={stopRun}>
               <Text style={styles.buttonText}>Stop Run</Text>
             </TouchableOpacity>
           </>
