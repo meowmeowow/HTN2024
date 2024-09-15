@@ -3,22 +3,6 @@ import { StyleSheet, Text, View, Button, Modal, TouchableOpacity } from 'react-n
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
 import SetGoal from './setGoal';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
-let tempPaceGoal = 5;
-let display = 0;
-let levelColour = 'gray';
-let userSpeed = 0;
-
-function drawProgress() {
-  <View style={{transform: [{rotateZ:'180deg'}]} }>
-        <AnimatedCircularProgress
-        size={120}
-        width={15}
-        fill={display}
-        tintColor= {levelColour}
-        backgroundColor="#FFF" />
-  </View>
-}
-drawProgress();
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -26,12 +10,25 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [paused, setPaused] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [display, setDisplay] = useState(0);
+  const [levelColour, setLevelColour] = useState('gray');
   const timerRef = useRef(null); // Ref to store interval timer
+  const locationSubscriptionRef = useRef(null); // Ref for location subscription
   const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
+  const paceGoal = 5; // Assuming paceGoal is a constant here; you can modify it accordingly
 
   const logJog = () => {
-    updateRunningMetrics(avgspeed/(elapsedTime*10), elapsedTime, paceGoal, date)
+    updateRunningMetrics(avgspeed / (elapsedTime * 10), elapsedTime, paceGoal, date);
+  };
+
+  const handleLogAndHide = () => {
+    logJog();
+    hideModal();
+  };
+
+  const hideModal = () => {
+    setShowModal(false);
   };
 
   useEffect(() => {
@@ -47,13 +44,11 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
             timeInterval: 100,
           },
           (location) => {
-            userSpeed = location.coords.speed;
+            const userSpeed = location.coords.speed;
             setSpeed(userSpeed);
-            setAvgSpeed(avgspeed + speed);
+            setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
             if (!paused) {
-              const userSpeed = location.coords.speed;
-              setSpeed(userSpeed);
-              setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
+              calculateDisplay(userSpeed);
             }
           }
         );
@@ -112,23 +107,36 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     return `${minutes}m ${secs}s`;
   };
 
-  const hideModal = () => {
-    setShowModal(false);
+  const calculateDisplay = (userSpeed) => {
+    let tempDisplay = Math.min(userSpeed * (50 / 3) / paceGoal * 100, 100);
+    let color;
+    if (tempDisplay < 25) {
+      color = '#cc0000'; // Red for low
+    } else if (tempDisplay < 50) {
+      color = '#e69138'; // Yellow for medium
+    } else if (tempDisplay < 75) {
+      color = '#f1c232'; // Light Yellow
+    } else {
+      color = '#6aa84f'; // Green for high
+    }
+    setDisplay(tempDisplay);
+    setLevelColour(color);
   };
 
   return (
     <View style={styles.container}>
       <SetGoal />
-      <View style={{position: 'absolute', alignSelf: 'center'}}>
+      <View style={{ position: 'absolute', alignSelf: 'center' }}>
         <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
         <Text style={{ textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
-        <View style={{transform: [{rotateZ:'180deg'}]} }>
-        <AnimatedCircularProgress
-        size={120}
-        width={15}
-        fill={display}
-        tintColor= {levelColour}
-        backgroundColor="#f5f5f5" />
+        <View style={{ transform: [{ rotateZ: '180deg' }] }}>
+          <AnimatedCircularProgress
+            size={120}
+            width={15}
+            fill={display}
+            tintColor={levelColour}
+            backgroundColor="#f5f5f5"
+          />
         </View>
 
         {!running ? (
@@ -191,27 +199,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   );
 };
 
-function speedChange()  {
-  if (userSpeed*(50/3)/(tempPaceGoal)*100 > 100) {
-    display = 100;
-  } else {
-    display = userSpeed*(50/3)/(tempPaceGoal)*100;
-  }
-  if (display < 25) {
-    levelColour = '#cc0000';
-  } else if (display < 50) {
-    levelColour = '#e69138';
-  } else if (display < 75) {
-    levelColour = '#f1c232'
-  } else  {
-    levelColour = '#6aa84f';
-  }
-}
-
-setInterval(function() {
-  speedChange();
-}, 2000);
-
 // Styles
 const styles = StyleSheet.create({
   container: {
@@ -220,7 +207,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
