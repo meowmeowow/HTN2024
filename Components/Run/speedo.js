@@ -112,15 +112,14 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       <View style={{position: 'absolute', alignSelf: 'center'}}>
         <Text style={{ textAlign: 'center' }}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
         <Text style={{ textAlign: 'center' }}>Time: {formatTime(elapsedTime)}</Text>
-         <View style={{transform: [{rotateZ:'180deg'}]} }>
-      <AnimatedCircularProgress
+        <View style={{transform: [{rotateZ:'180deg'}]} }>
+        <AnimatedCircularProgress
         size={120}
         width={15}
         fill={display}
         tintColor= {levelColour}
         backgroundColor="#FFF" />
        </View>
-
         {!running ? (
           <Button style={styles.button} title="Start Run" onPress={startRun} />
         ) : paused ? (
