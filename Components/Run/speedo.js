@@ -13,14 +13,11 @@ const moodNeutral = require('./CoachMood/ColdChicken.png');
 const potentialSpeech = {
   happyCoach: [
     "Hey! Keep it up!",
-    "You're doing great!!",
   ],
   neutralCoach: [
     "I think we can do better than that.",
-    "Pick up the pace...",
   ],
   angryCoach: [
-    "You makin' fun of me??!?",
     "This is why Jolliver said you were built like a rat.",
   ],
 };
@@ -44,7 +41,7 @@ const LOW_SPEED_THRESHOLD = 0.5; // speed below which message is fetched
 const HIGH_SPEED_THRESHOLD = 1.5; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
-  const [blab, setBlab] = useState("Another day, another you, let's get going!");
+  const [blab, setBlab] = useState("nice to see you again. Get ready to run!");
   const [speed, setSpeed] = useState(null);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -193,17 +190,24 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     let color;
     if (tempDisplay < 25) {
       setCoachState(moodMad);
+      newBlab= potentialSpeech.angryCoach
       color = '#cc0000'; // Red for low
     } else if (tempDisplay < 50) {
       color = '#e69138'; // Yellow for medium
       setCoachState(moodNeutral);
+      newBlab = (potentialSpeech.neutralCoach)
+
 
     } else if (tempDisplay < 75) {
       setCoachState(moodHappy);
+      newBlab = (potentialSpeech.happyCoach)
 
       color = '#f1c232'; // Light Yellow
     } else {
       color = '#6aa84f'; // Green for high
+    }
+    if(blab != newBlab){
+      setBlab(newBlab);
     }
     setDisplay(tempDisplay);
     setLevelColour(color);
