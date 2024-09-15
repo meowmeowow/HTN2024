@@ -1,8 +1,28 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Modal, TouchableOpacity } from 'react-native';
 import { Accuracy, requestPermissionsAsync, watchPositionAsync } from 'expo-location';
-import SetGoal from './setGoal';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import axios from 'axios';
+import * as Speech from 'expo-speech';
+import SetGoal from './setGoal';
+
+const API_URL = 'http://quickdraw.willowmail.com/api/data'; 
+
+const initialMotivatorList = [
+  "Wow I love walking my dog in the morning!",
+  "I have such good friends",
+  "I feel good about myself"
+];
+
+const initialDemotivatorList = [
+  "Everyone bullies me",
+  "That time in 7th grade I came in last in the run",
+  "I just broke up with my partner"
+];
+
+// Define speed thresholds
+const LOW_SPEED_THRESHOLD = 1; // speed below which message is fetched
+const HIGH_SPEED_THRESHOLD = 3; // speed above which message is fetched
 
 const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [speed, setSpeed] = useState(null);
@@ -12,11 +32,26 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const [showModal, setShowModal] = useState(false);
   const [display, setDisplay] = useState(0);
   const [levelColour, setLevelColour] = useState('gray');
+  const [story, setStory] = useState('');
+  const [error, setError] = useState('');
+  
   const timerRef = useRef(null); // Ref to store interval timer
   const locationSubscriptionRef = useRef(null); // Ref for location subscription
   const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
   const paceGoal = 5; // Assuming paceGoal is a constant here; you can modify it accordingly
+
+  const fetchText = async (messageType) => {
+    try {
+      const response = await axios.post(API_URL, { 'message': messageType });
+      const fetchedMessage = response.data.message;
+      setStory(fetchedMessage);
+      Speech.speak(fetchedMessage, { language: 'en' });
+    } catch (error) {
+      setError('Failed to fetch message.');
+      Speech.speak('Error fetching message.', { language: 'en' });
+    }
+  };
 
   const logJog = () => {
     updateRunningMetrics(avgspeed / (elapsedTime * 10), elapsedTime, paceGoal, date);
@@ -41,14 +76,23 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
         locationSubscriptionRef.current = await watchPositionAsync(
           {
             accuracy: Accuracy.BestForNavigation,
-            timeInterval: 100,
+            timeInterval: 1000,
           },
           (location) => {
-            const userSpeed = location.coords.speed;
+            const userSpeed = location.coords.speed**(1.5); // Adjust speed if needed
             setSpeed(userSpeed);
             setAvgSpeed((prevAvgSpeed) => prevAvgSpeed + userSpeed);
+
             if (!paused) {
               calculateDisplay(userSpeed);
+
+              // Fetch and speak message based on speed
+              if (userSpeed < LOW_SPEED_THRESHOLD && running == true) {
+                
+                fetchText('Can you make a short phrase reminding someone for '+ initialDemotivatorList[Math.floor(Math.random() * initialDemotivatorList.length)]+ "from the perspective of a goose");
+              } else if (userSpeed > HIGH_SPEED_THRESHOLD && running == true) {
+                fetchText('Can you make a short phrase praising someone for '+ initialMotivatorList[Math.floor(Math.random() * initialMotivatorList.length)]+ "from the perspective of a goose");
+              }
             }
           }
         );
@@ -141,39 +185,39 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
 
         {!running ? (
           <TouchableOpacity
-            style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+            style={styles.button}
             onPress={startRun}
           >
-            <Text style={{ color: 'white' }}>Start Run</Text>
+            <Text style={styles.buttonText}>Start Run</Text>
           </TouchableOpacity>
         ) : paused ? (
           <>
             <TouchableOpacity
-              style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+              style={styles.button}
               onPress={resumeRun}
             >
-              <Text style={{ color: 'white' }}>Resume Run</Text>
+              <Text style={styles.buttonText}>Resume Run</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ backgroundColor: 'red', padding: 18, borderRadius: 10, margin: 10 }}
+              style={styles.stopButton}
               onPress={stopRun}
             >
-              <Text style={{ color: 'white' }}>Stop Run</Text>
+              <Text style={styles.buttonText}>Stop Run</Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
             <TouchableOpacity
-              style={{ backgroundColor: 'blue', padding: 18, borderRadius: 10, margin: 10 }}
+              style={styles.button}
               onPress={pauseRun}
             >
-              <Text style={{ color: 'white' }}>Pause Run</Text>
+              <Text style={styles.buttonText}>Pause Run</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ backgroundColor: 'red', padding: 18, borderRadius: 10, margin: 10 }}
+              style={styles.stopButton}
               onPress={stopRun}
             >
-              <Text style={{ color: 'white' }}>Stop Run</Text>
+              <Text style={styles.buttonText}>Stop Run</Text>
             </TouchableOpacity>
           </>
         )}
@@ -206,6 +250,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 18,
+    borderRadius: 10,
+    margin: 10,
+  },
+  stopButton: {
+    backgroundColor: 'red',
+    padding: 18,
+    borderRadius: 10,
+    margin: 10,
+  },
+  buttonText: {
+    color: 'white',
   },
   modalContainer: {
     flex: 1,
