@@ -25,8 +25,8 @@ const initialMotivatorList = [
   "I feel good about myself"
 ];
 const initialDemotivatorList = [
-  "Everyone bullies me",
-  "That time in 7th grade I came in last in the run",
+  "I am weak and skinny. I must get Strong!",
+  "Jolliver called me a rat??",
   "I just broke up with my partner"
 ];
 
@@ -135,14 +135,14 @@ const ProfileScreen = ({ navigation }) => {
     }}
     style={{ padding: 10 }}
   />
-  <Button
-    title="+ Negative motivation"
-    onPress={() => {
-      setSelectedAffirmationType('negative');
-      setModalVisible(true);
-    }}
-    style={{ padding: 10, marginLeft: 20 }}
-  />
+<Button
+  title="+ Aggressive motivation"
+  onPress={() => {
+    setSelectedAffirmationType('negative');
+    setModalVisible(true);
+  }}
+  style={{ padding: 10, backgroundColor: '#FF0000' }}
+/>
 </View>
 
       </View>
@@ -154,7 +154,7 @@ const ProfileScreen = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderAffirmationItem}
         />
-        <Text style={styles.sectionTitle}>Negative motivation</Text>
+        <Text style={styles.sectionTitle}>Agressive motivation</Text>
         <FlatList
           data={demotivatorList}
           keyExtractor={(item, index) => index.toString()}

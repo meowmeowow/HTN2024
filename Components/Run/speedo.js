@@ -39,6 +39,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   const locationSubscriptionRef = useRef(null); // Ref for location subscription
   const date = 'Sat Sep 15';
   const [avgspeed, setAvgSpeed] = useState(0);
+  const paceGoal = 5; // Assuming paceGoal is a constant here; you can modify it accordingly
 
   const fetchText = async (messageType) => {
     try {
@@ -166,7 +167,7 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
   };
 
   const calculateDisplay = (userSpeed) => {
-    let tempDisplay = Math.min((userSpeed / paceGoal) * 100, 100);
+    let tempDisplay = Math.min(userSpeed/ paceGoal * 100, 100);
     let color;
     if (tempDisplay < 25) {
       color = '#cc0000'; // Red for low
@@ -181,7 +182,6 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
     setLevelColour(color);
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Set Goal Speed (m/s):</Text>
@@ -190,15 +190,14 @@ const SpeedDisplay = ({ updateRunningMetrics }) => {
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>User's Speed: {Math.round(speed * 10) / 10} m/s</Text>
         <Text style={styles.statsText}>Time: {formatTime(elapsedTime)}</Text>
-        <Text style={styles.statsText}>Distance: {Math.round((avgspeed * elapsedTime) / 100)} m</Text>
 
         <View style={styles.progressBarContainer}>
-        <ProgressBar
-  progress={display / 100} // Adjusted to be a percentage value between 0 and 1
-  color={levelColour}
-  style={styles.progressBar}
-  unfilledColor="#f5f5f5"
-/>
+          <ProgressBar
+            progress={display / 100}
+            color={levelColour}
+            style={styles.progressBar}
+            unfilledColor="#f5f5f5"
+          />
         </View>
 
         <View style={styles.buttonsContainer}>
